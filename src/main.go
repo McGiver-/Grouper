@@ -23,7 +23,7 @@ func main() {
 	http.HandleFunc("/categories", George)
 	http.HandleFunc("/friends", FriendHandler)
 	http.HandleFunc("/addUser",addUser)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":9000", nil))
 }
 
 /* --------------------------------------- Handlers -------------------------------------------------- */
