@@ -43,7 +43,7 @@ func addUser(rw http.ResponseWriter, req *http.Request){
 	}
 	defer rows.Close()
 
-	for rows.Close(){
+	for rows.Next(){
 		if err := rows.Scan(&username); err != nil{
 			log.Fatal(err)
 		}
