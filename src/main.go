@@ -36,7 +36,7 @@ func addUser(rw http.ResponseWriter, req *http.Request){
 	username := req.URL.Query().Get("username")
 	password := req.URL.Query().Get("password")
 
-	rows, err := db.Query("SELECT EXISTS (SELECT 1 FROM accounts WHERE username = "+username+" LIMIT 1")
+	rows, err := db.Query("SELECT EXISTS (SELECT 1 FROM accounts WHERE username=? LIMIT 1);",username)
 
 	if err != nil {
 		fmt.Println("Failed the find")
