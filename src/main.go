@@ -40,6 +40,7 @@ func addUser(rw http.ResponseWriter, req *http.Request){
 
 	if err != nil {
 		fmt.Println("Failed the find")
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
