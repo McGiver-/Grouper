@@ -20,8 +20,8 @@ type AddUserResponse struct{
 
 func main() {
 
-	http.HandleFunc("/categories", George)
-	http.HandleFunc("/friends", FriendHandler)
+//	http.HandleFunc("/categories", George)
+//	http.HandleFunc("/friends", FriendHandler)
 	http.HandleFunc("/addUser",addUser)
 	log.Fatal(http.ListenAndServe(":9000", nil))
 }
@@ -35,6 +35,20 @@ func addUser(rw http.ResponseWriter, req *http.Request){
 
 	username := req.URL.Query().Get("username")
 	password := req.URL.Query().Get("password")
+
+	rows, err := db.Query("SELECT EXISTS (SELECT 1 FROM accounts WHERE username = "+username+" LIMIT 1")
+
+	if err != nil {
+		fmt.Println("Failed the find")
+	}
+	defer rows.Close()
+
+	for rows.Close(){
+		if err := rows.Scan(&username); err != nil{
+			log.Fatal(err)
+		}
+		fmt.Println("username: "+ username)
+	}
 
 	// Insert two rows into the "accounts" table.
 	if _, err := db.Exec(
