@@ -24,7 +24,7 @@ func ListUsers(rw http.ResponseWriter, req *http.Request){
 		fmt.Println("Connected to database")
 	}
 
-	rows, err := db.Query("SELECT * FROM accounts")
+	rows, err := db.Query("SELECT username,password FROM accounts")
 
 	if err != nil {
 		fmt.Println("Failed the find")
