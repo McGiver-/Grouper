@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"crypto/sha512"
 	"encoding/base64"
+	_"github.com/lib/pq"
 )
 
 
