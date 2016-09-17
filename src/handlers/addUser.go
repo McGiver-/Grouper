@@ -42,7 +42,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 		if err := rows.Scan(&username); err != nil{
 			log.Fatal(err)
 		}
-		if username != false{
+		if username != "false"{
 			if _, err := db.Exec(
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+")"); err != nil {
 				log.Fatal(err)
