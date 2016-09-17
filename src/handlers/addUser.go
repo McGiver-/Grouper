@@ -21,6 +21,8 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	db, err := sql.Open("postgres", "postgresql://george@localhost:26257/grouper?sslmode=disable")
 	if err != nil {
 		log.Fatalf("error connection to the database: %s", err)
+	}else{
+		fmt.Println("Connected to database")
 	}
 
 	username := req.URL.Query().Get("username")
