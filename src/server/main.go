@@ -16,6 +16,7 @@ type Category struct {
 func main() {
 	fmt.Println("Application started")
 	http.HandleFunc("/addUser",handlers.AddUser)
+	http.HandleFunc("/listUsers",handlers.ListUsers)
 	log.Fatal(http.ListenAndServe(":9000", nil))
 }
 

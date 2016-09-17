@@ -45,7 +45,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 		if err := rows.Scan(&foundUsername); err != nil{
 			log.Fatal(err)
 		}
-		fmt.Printf("Found username = &1",foundUsername)
+		fmt.Printf("Found username = %s",foundUsername)
 		if foundUsername == "false"{
 			if _, err := db.Exec(
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+"')"); err != nil {
