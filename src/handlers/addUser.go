@@ -33,7 +33,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	}
 
 	hasher := sha512.New()
-	hasher.Write(password)
+	hasher.Write([]byte(password))
 	hashedPass := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 
 	defer rows.Close()
