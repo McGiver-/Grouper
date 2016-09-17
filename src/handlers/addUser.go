@@ -17,7 +17,7 @@ type AddUserResponse struct{
 }
 
 func AddUser(rw http.ResponseWriter, req *http.Request){
-
+	fmt.Println("addUser visited")
 	db, err := sql.Open("postgres", "postgresql://george@localhost:26257/grouper?sslmode=disable")
 	if err != nil {
 		log.Fatalf("error connection to the database: %s", err)
