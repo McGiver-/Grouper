@@ -37,12 +37,12 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	hashedPass := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 
 	defer rows.Close()
-
+	var foundUsername string
 	for rows.Next(){
-		if err := rows.Scan(&username); err != nil{
+		if err := rows.Scan(&foundUsername); err != nil{
 			log.Fatal(err)
 		}
-		if username != "false"{
+		if foundUsername == "false"{
 			if _, err := db.Exec(
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+")"); err != nil {
 				log.Fatal(err)
