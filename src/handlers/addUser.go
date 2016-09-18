@@ -27,7 +27,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 		rw.WriteHeader(http.StatusConflict)
 		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
 		response := AddUserResponse{false,false,true}
-		if encoded := jsonResponse(rw,response); encoded != true{
+		if encoded := jsonResponse(&rw,response); encoded != true{
 			return
 		}
 	}else{
@@ -42,7 +42,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	if err != nil {
 		fmt.Println("DATABASE ERROR: Failed username search in adduser")
 		response := AddUserResponse{false,false,true}
-		if encoded := jsonResponse(rw,response); encoded != true{
+		if encoded := jsonResponse(&rw,response); encoded != true{
 			return
 		}
 	}
@@ -57,7 +57,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 		if err := rows.Scan(&foundUsername); err != nil{
 			fmt.Println("DATABASE ERROR: Failed to scan")
 			response := AddUserResponse{false,false,true}
-			if encoded := jsonResponse(rw,response); encoded != true{
+			if encoded := jsonResponse(&rw,response); encoded != true{
 				return
 			}
 		}
@@ -71,14 +71,14 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 			}else{
 				fmt.Printf("Users %s added",username);
 				response := AddUserResponse{true,false,false}
-				if encoded := jsonResponse(rw,response); encoded != true{
+				if encoded := jsonResponse(&rw,response); encoded != true{
 					return
 				}
 			}
 		case "true":
 			response := AddUserResponse{false,true,false}
 			fmt.Printf("Username %s already exists",username)
-			if encoded := jsonResponse(rw,response); encoded != true{
+			if encoded := jsonResponse(&rw,response); encoded != true{
 				return
 			}
 		}
