@@ -83,10 +83,14 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 					for rows.Next() {
 						if err := rows.Scan(&foundId); err != nil {
 							fmt.Println("DATABASE ERROR: Failed to scan")
-							rw.WriteHeader(http.StatusOK)
-							if encoded := jsonResponse(&rw, AddUserResponse{false, false, true, foundId}); encoded != true {
+							rw.WriteHeader(http.StatusConflict)
+							if encoded := jsonResponse(&rw, AddUserResponse{false, false, true, -1}); encoded != true {
 								return
 							}
+						}
+						rw.WriteHeader(http.StatusConflict)
+						if encoded := jsonResponse(&rw, AddUserResponse{true, false, false, -foundId}); encoded != true {
+							return
 						}
 					}
 				}
