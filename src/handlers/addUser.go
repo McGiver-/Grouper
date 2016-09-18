@@ -27,8 +27,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 		fmt.Println("DATABASE ERROR: Failed to connect to datbase in addUser")
 		rw.WriteHeader(http.StatusConflict)
 		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
-		response := AddUserResponse{false,false,true,nil}
-		if encoded := jsonResponse(&rw,response); encoded != true{
+		if encoded := jsonResponse(&rw,AddUserResponse{false,false,true,-1}); encoded != true{
 			return
 		}
 	}else{
@@ -42,9 +41,8 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 
 	if err != nil {
 		fmt.Println("DATABASE ERROR: Failed username search in adduser")
-		response := AddUserResponse{false,false,true,nil}
 		rw.WriteHeader(http.StatusConflict)
-		if encoded := jsonResponse(&rw,response); encoded != true{
+		if encoded := jsonResponse(&rw,AddUserResponse{false,false,true,-1}); encoded != true{
 			return
 		}
 	}
@@ -59,9 +57,8 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	for rows.Next(){
 		if err := rows.Scan(&foundUsername); err != nil{
 			fmt.Println("DATABASE ERROR: Failed to scan")
-			response := AddUserResponse{false,false,true,nil}
 			rw.WriteHeader(http.StatusConflict)
-			if encoded := jsonResponse(&rw,response); encoded != true{
+			if encoded := jsonResponse(&rw,AddUserResponse{false,false,true,-1}); encoded != true{
 				return
 			}
 		}
@@ -76,9 +73,8 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 				rows,err = db.Exec("SELECT id FROM accounts WHERE username=$1 , password=$2",username, hashedPass)
 				if err != nil{
 					fmt.Println("DATABASE ERROR: Failed to get id after insert in adduser")
-					response := AddUserResponse{false,false,true,nil}
 					rw.WriteHeader(http.StatusConflict)
-					if encoded := jsonResponse(&rw,response); encoded != true{
+					if encoded := jsonResponse(&rw,AddUserResponse{false,false,true,-1}); encoded != true{
 						return
 					}
 				}else{
@@ -87,9 +83,8 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 					for rows.Next() {
 						if err := rows.Scan(&foundId); err != nil {
 							fmt.Println("DATABASE ERROR: Failed to scan")
-							response := AddUserResponse{false, false, true, foundId}
 							rw.WriteHeader(http.StatusOK)
-							if encoded := jsonResponse(&rw, response); encoded != true {
+							if encoded := jsonResponse(&rw, AddUserResponse{false, false, true, foundId}); encoded != true {
 								return
 							}
 						}
@@ -97,10 +92,9 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 				}
 			}
 		case "true":
-			response := AddUserResponse{false,true,false,nil}
 			fmt.Printf("Username %s already exists \n",username)
 			rw.WriteHeader(http.StatusConflict)
-			if encoded := jsonResponse(&rw,response); encoded != true{
+			if encoded := jsonResponse(&rw,AddUserResponse{false,true,false,-1}); encoded != true{
 				return
 			}
 		}
