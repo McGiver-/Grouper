@@ -13,9 +13,10 @@ import (
 
 
 type AddUserResponse struct{
-	Success bool `json:"success"`
-	Exists bool `json:"exists"`
-	DBError bool `json:dberror`
+	Success bool    `json:"success"`
+	Exists  bool    `json:"exists"`
+	DBError bool    `json:dberror`
+	UserId      int     `json:"userid"`
 }
 
 func AddUser(rw http.ResponseWriter, req *http.Request){
@@ -26,7 +27,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 		fmt.Println("DATABASE ERROR: Failed to connect to datbase in addUser")
 		rw.WriteHeader(http.StatusConflict)
 		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
-		response := AddUserResponse{false,false,true}
+		response := AddUserResponse{false,false,true,nil}
 		if encoded := jsonResponse(&rw,response); encoded != true{
 			return
 		}
@@ -41,7 +42,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 
 	if err != nil {
 		fmt.Println("DATABASE ERROR: Failed username search in adduser")
-		response := AddUserResponse{false,false,true}
+		response := AddUserResponse{false,false,true,nil}
 		rw.WriteHeader(http.StatusConflict)
 		if encoded := jsonResponse(&rw,response); encoded != true{
 			return
@@ -49,6 +50,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	}
 
 	hasher := sha512.New()
+	password = password + "George is the worst damn coder ever"
 	hasher.Write([]byte(password))
 	hashedPass := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 
@@ -57,7 +59,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	for rows.Next(){
 		if err := rows.Scan(&foundUsername); err != nil{
 			fmt.Println("DATABASE ERROR: Failed to scan")
-			response := AddUserResponse{false,false,true}
+			response := AddUserResponse{false,false,true,nil}
 			rw.WriteHeader(http.StatusConflict)
 			if encoded := jsonResponse(&rw,response); encoded != true{
 				return
@@ -71,15 +73,31 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+"')"); err != nil {
 				log.Fatal(err)
 			}else{
-				fmt.Printf("Users %s added \n",username);
-				response := AddUserResponse{true,false,false}
-				rw.WriteHeader(http.StatusOK)
-				if encoded := jsonResponse(&rw,response); encoded != true{
-					return
+				rows,err = db.Exec("SELECT id FROM accounts WHERE username=$1 , password=$2",username, hashedPass)
+				if err != nil{
+					fmt.Println("DATABASE ERROR: Failed to get id after insert in adduser")
+					response := AddUserResponse{false,false,true,nil}
+					rw.WriteHeader(http.StatusConflict)
+					if encoded := jsonResponse(&rw,response); encoded != true{
+						return
+					}
+				}else{
+					var foundId int
+					fmt.Printf("Users %s added \n",username);
+					for rows.Next() {
+						if err := rows.Scan(&foundId); err != nil {
+							fmt.Println("DATABASE ERROR: Failed to scan")
+							response := AddUserResponse{false, false, true, foundId}
+							rw.WriteHeader(http.StatusOK)
+							if encoded := jsonResponse(&rw, response); encoded != true {
+								return
+							}
+						}
+					}
 				}
 			}
 		case "true":
-			response := AddUserResponse{false,true,false}
+			response := AddUserResponse{false,true,false,nil}
 			fmt.Printf("Username %s already exists \n",username)
 			rw.WriteHeader(http.StatusConflict)
 			if encoded := jsonResponse(&rw,response); encoded != true{
