@@ -85,14 +85,14 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	}
 }
 
-func jsonResponse(rw http.ResponseWriter , response AddUserResponse) (bool){
+func jsonResponse(rw *http.ResponseWriter , response AddUserResponse) (bool){
 	if err := json.NewEncoder(rw).Encode(response); err != nil{
-		rw.WriteHeader(http.StatusConflict)
+		(*rw).WriteHeader(http.StatusConflict)
 		fmt.Println("Error during json encoding in addUser")
 		return false
 	}else{
-		rw.WriteHeader(http.StatusOK)
-		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
+		(*rw).WriteHeader(http.StatusOK)
+		(*rw).Header().Set("Content-Type","application/json; charset=UTF-8")
 		fmt.Println("Json sent successfully in addUser")
 		return true
 	}
