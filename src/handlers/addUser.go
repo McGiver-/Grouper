@@ -70,7 +70,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+"')"); err != nil {
 				log.Fatal(err)
 			}else{
-				rows,err := db.Exec("SELECT id FROM accounts WHERE username='$1' and password='$2' ;",username, hashedPass)
+				rows,err := db.Query("SELECT id FROM accounts WHERE username='$1' and password='$2' ;",username, hashedPass)
 				if err != nil{
 					fmt.Println("DATABASE ERROR: Failed to get id after insert in adduser")
 					rw.WriteHeader(http.StatusConflict)
