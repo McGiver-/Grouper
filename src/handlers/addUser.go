@@ -71,7 +71,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+"')"); err != nil {
 				log.Fatal(err)
 			}else{
-				fmt.Printf("Users %s added /n",username);
+				fmt.Printf("Users %s added \n",username);
 				response := AddUserResponse{true,false,false}
 				rw.WriteHeader(http.StatusOK)
 				if encoded := jsonResponse(&rw,response); encoded != true{
@@ -92,7 +92,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 func jsonResponse(rw *http.ResponseWriter , response AddUserResponse) (bool){
 
 	(*rw).Header().Set("Content-Type","application/json; charset=UTF-8")
-	
+
 	if err := json.NewEncoder(*rw).Encode(response); err != nil{
 		fmt.Println("Error during json encoding in addUser")
 		return false
