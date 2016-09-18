@@ -22,7 +22,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	fmt.Println("addUser visited")
 	db, err := sql.Open("postgres", "postgresql://george@localhost:26257/grouper?sslmode=disable")
 
-	if err != nil {
+	if err != nil || db.Ping() != nil{
 		fmt.Println("DATABASE ERROR: Failed to connect to datbase in addUser")
 		rw.WriteHeader(http.StatusConflict)
 		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
