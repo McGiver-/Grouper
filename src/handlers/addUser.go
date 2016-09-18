@@ -61,7 +61,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 				return
 			}
 		}
-		fmt.Printf("Found username = %s",foundUsername)
+		fmt.Printf("Found username = %s \n",foundUsername)
 		switch foundUsername {
 
 		case "false":
@@ -69,7 +69,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+"')"); err != nil {
 				log.Fatal(err)
 			}else{
-				fmt.Printf("Users %s added",username);
+				fmt.Printf("Users %s added /n",username);
 				response := AddUserResponse{true,false,false}
 				if encoded := jsonResponse(&rw,response); encoded != true{
 					return
