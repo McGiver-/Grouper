@@ -14,13 +14,22 @@ import (
 
 type AddUserResponse struct{
 	Success bool `json:"success"`
+	Exists bool `json:"exists"`
+	DBError bool `json:dberror`
 }
 
 func AddUser(rw http.ResponseWriter, req *http.Request){
 	fmt.Println("addUser visited")
 	db, err := sql.Open("postgres", "postgresql://george@localhost:26257/grouper?sslmode=disable")
+
 	if err != nil {
-		log.Fatalf("error connection to the database: %s", err)
+		fmt.Println("DATABASE ERROR: Failed to connect to datbase in addUser")
+		rw.WriteHeader(http.StatusConflict)
+		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
+		response := AddUserResponse{false,false,true}
+		if encoded := jsonResponse(rw,response); encoded != true{
+			return
+		}
 	}else{
 		fmt.Println("Connected to database")
 	}
@@ -31,8 +40,11 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	rows, err := db.Query("SELECT EXISTS (SELECT 1 FROM accounts WHERE username=$1 LIMIT 1);",username)
 
 	if err != nil {
-		fmt.Println("Failed the find")
-		log.Fatal(err)
+		fmt.Println("DATABASE ERROR: Failed username search in adduser")
+		response := AddUserResponse{false,false,true}
+		if encoded := jsonResponse(rw,response); encoded != true{
+			return
+		}
 	}
 
 	hasher := sha512.New()
@@ -43,30 +55,45 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	var foundUsername string
 	for rows.Next(){
 		if err := rows.Scan(&foundUsername); err != nil{
-			log.Fatal(err)
+			fmt.Println("DATABASE ERROR: Failed to scan")
+			response := AddUserResponse{false,false,true}
+			if encoded := jsonResponse(rw,response); encoded != true{
+				return
+			}
 		}
 		fmt.Printf("Found username = %s",foundUsername)
-		if foundUsername == "false"{
+		switch foundUsername {
+
+		case "false":
 			if _, err := db.Exec(
 				"INSERT INTO accounts (username, password) VALUES ('"+username+"','"+hashedPass+"')"); err != nil {
 				log.Fatal(err)
 			}else{
 				fmt.Printf("Users %s added",username);
-				response := AddUserResponse{true}
-				if err := json.NewEncoder(rw).Encode(response); err != nil{
-					rw.WriteHeader(http.StatusConflict)
-					panic(err)
-				}else{
-					rw.WriteHeader(http.StatusOK)
-					rw.Header().Set("Content-Type","application/json; charset=UTF-8")
-					fmt.Println("Json success sent")
+				response := AddUserResponse{true,false,false}
+				if encoded := jsonResponse(rw,response); encoded != true{
+					return
 				}
 			}
-		}else{
-			rw.WriteHeader(http.StatusConflict)
-			rw.Header().Set("Content-Type","application/json; charset=UTF-8")
-			fmt.Println("User already exists")
+		case "true":
+			response := AddUserResponse{false,true,false}
+			fmt.Printf("Username %s already exists",username)
+			if encoded := jsonResponse(rw,response); encoded != true{
+				return
+			}
 		}
 	}
 }
 
+func jsonResponse(rw http.ResponseWriter , response AddUserResponse) (bool){
+	if err := json.NewEncoder(rw).Encode(response); err != nil{
+		rw.WriteHeader(http.StatusConflict)
+		fmt.Println("Error during json encoding in addUser")
+		return false
+	}else{
+		rw.WriteHeader(http.StatusOK)
+		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
+		fmt.Println("Json sent successfully in addUser")
+		return true
+	}
+}
