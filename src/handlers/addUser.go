@@ -77,7 +77,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 			}
 		case "true":
 			response := AddUserResponse{false,true,false}
-			fmt.Printf("Username %s already exists /n",username)
+			fmt.Printf("Username %s already exists \n",username)
 			if encoded := jsonResponse(&rw,response); encoded != true{
 				return
 			}
