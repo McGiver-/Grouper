@@ -24,8 +24,7 @@ func ListUsers(rw http.ResponseWriter, req *http.Request){
 		fmt.Println("Failed the find")
 		log.Fatal(err)
 	}
-
-	defer rows.Close()
+	
 	var username, password string
 
 	response := []usernamePassArray{}

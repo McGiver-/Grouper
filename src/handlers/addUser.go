@@ -42,7 +42,6 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 	hasher.Write([]byte(password))
 	hashedPass := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 
-	defer rows.Close()
 	var foundUsername string
 	for rows.Next(){
 		if err := rows.Scan(&foundUsername); err != nil{
