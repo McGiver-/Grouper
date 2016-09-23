@@ -17,13 +17,7 @@ type usernamePassArray struct{
 
 func ListUsers(rw http.ResponseWriter, req *http.Request){
 	fmt.Println("listUser visited")
-	db, err := sql.Open("postgres", "postgresql://george@localhost:26257/grouper?sslmode=disable")
-	if err != nil {
-		log.Fatalf("error connection to the database: %s", err)
-	}else{
-		fmt.Println("Connected to database")
-	}
-
+	db = myDb.Db
 	rows, err := db.Query("SELECT username,password FROM accounts")
 
 	if err != nil {

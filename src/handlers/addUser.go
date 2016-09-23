@@ -8,6 +8,7 @@ import (
 	"crypto/sha512"
 	"encoding/base64"
 	_"github.com/lib/pq"
+	"github.com.McGiver-/Grouper/myDb"
 )
 
 
@@ -21,18 +22,7 @@ type AddUserResponse struct{
 
 func AddUser(rw http.ResponseWriter, req *http.Request){
 	fmt.Println("addUser visited")
-	db, err := sql.Open("postgres", "postgresql://george@localhost:26257/grouper?sslmode=disable")
-
-	if err != nil || db.Ping() != nil{
-		fmt.Println("DATABASE ERROR: Failed to connect to datbase in addUser")
-		rw.WriteHeader(http.StatusConflict)
-		rw.Header().Set("Content-Type","application/json; charset=UTF-8")
-		if encoded := jsonResponse(&rw,AddUserResponse{false,false,true,-1}); encoded != true{
-			return
-		}
-	}else{
-		fmt.Println("Connected to database")
-	}
+	db = myDb.Db
 
 	username := req.URL.Query().Get("username")
 	password := req.URL.Query().Get("password")

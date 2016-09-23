@@ -3,21 +3,18 @@ package myDB
 import (
 	"fmt"
 	"database/sql"
+	"log"
 )
 
-type MyDB struct{
-	db *sql.DB
-}
+var Db *sql.DB
 
-func Inititialize(driverName, dataSourceName string) (mydb MyDB){
-	var db *sql.DB
-	db, err = sql.Open(driverName, dataSourceName)
+func Init(driverName, dataSourceName string){
+	Db, err = sql.Open(driverName, dataSourceName)
 
 	if err != nil {
-		fmt.Printf("Connected to database at $1",dataSourceName)
+		fmt.Printf("***Connection to database failed at $1 \n",dataSourceName)
+		log.Fatal("Could Not Connect To database")
 	}else{
-		mydb = MyDB{db}
+		fmt.Println("Connected to database")
 	}
-	return mydb, err
 }
-
