@@ -9,8 +9,8 @@ import (
 var Db *sql.DB
 
 func Init(driverName, dataSourceName string){
-	Db, err = sql.Open(driverName, dataSourceName)
-
+	db, err := sql.Open(driverName, dataSourceName)
+	Db = db
 	if err != nil {
 		fmt.Printf("***Connection to database failed at $1 \n",dataSourceName)
 		log.Fatal("Could Not Connect To database")

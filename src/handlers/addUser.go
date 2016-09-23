@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"log"
 	"encoding/json"
-	"database/sql"
 	"crypto/sha512"
 	"encoding/base64"
 	_"github.com/lib/pq"
-	"github.com.McGiver-/Grouper/myDb"
+	"github.com/McGiver-/Grouper/src/myDB"
 )
 
 
@@ -17,12 +16,12 @@ type AddUserResponse struct{
 	Success bool    `json:"success"`
 	Exists  bool    `json:"exists"`
 	DBError bool    `json:dberror`
-	UserId      int     `json:"userid"`
+	UserId 	int     `json:"userid"`
 }
 
 func AddUser(rw http.ResponseWriter, req *http.Request){
 	fmt.Println("addUser visited")
-	db = myDb.Db
+	db := myDB.Db
 
 	username := req.URL.Query().Get("username")
 	password := req.URL.Query().Get("password")
@@ -78,7 +77,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 							}
 						}
 						rw.WriteHeader(http.StatusConflict)
-						if encoded := jsonResponse(&rw, AddUserResponse{true, false, false, -foundId}); encoded != true {
+						if encoded := jsonResponse(&rw, AddUserResponse{true, false, false,foundId}); encoded != true {
 							return
 						}
 					}

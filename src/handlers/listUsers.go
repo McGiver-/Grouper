@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"log"
 	"encoding/json"
-	"database/sql"
+	"github.com/McGiver-/Grouper/src/myDB"
 	_"github.com/lib/pq"
 )
 
@@ -17,14 +17,14 @@ type usernamePassArray struct{
 
 func ListUsers(rw http.ResponseWriter, req *http.Request){
 	fmt.Println("listUser visited")
-	db = myDb.Db
+	db := myDB.Db
 	rows, err := db.Query("SELECT username,password FROM accounts")
 
 	if err != nil {
 		fmt.Println("Failed the find")
 		log.Fatal(err)
 	}
-	
+
 	var username, password string
 
 	response := []usernamePassArray{}
