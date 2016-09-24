@@ -11,23 +11,23 @@ import(
 
 type LoginResponse struct{
 	Success bool    `json:"success"`
-	DBError bool    `json:dberror`
+	DBError bool    `json:"dberror"`
 	UserId 	int     `json:"userid"`
 }
 
-func login(rw http.ResponseWriter, req *http.Request){
+func Login(rw http.ResponseWriter, req *http.Request){
   fmt.Println("Login visited")
   db := myDB.Db
 
-  username := req.Url.Query().get("username")
-  password := req.Url.Query().get("password")
+  username := req.URL.Query().Get("username")
+  password := req.URL.Query().Get("password")
 
   hasher := sha512.New()
   password = password +"George is the worst damn coder ever"
   hasher.Write([]byte(password))
   hashedPass := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
-
-  rows, err := db.Query("SELECT id FROM accounts WHERE username=$1 and password=$2",username,hashedPass)
+  fmt.Println("Pass Hashed")
+  rows, err := db.Query("SELECT id FROM accounts WHERE username=$1 and password=$2 ;",username,hashedPass)
 
   if err != nil {
 		fmt.Println("DATABASE ERROR: Failed username search in adduser")
@@ -36,6 +36,7 @@ func login(rw http.ResponseWriter, req *http.Request){
 			return
 		}
 	}
+  fmt.Println("Number 1")
   var foundId int
   for rows.Next(){
     if err := rows.Scan(&foundId); err != nil {
@@ -45,7 +46,7 @@ func login(rw http.ResponseWriter, req *http.Request){
         return
       }
     }
-    rw.WriteHeader(http.StatusConflict)
+    rw.WriteHeader(http.StatusOK)
     if encoded := sendLoginResponse(&rw, LoginResponse{true,false,foundId}); encoded != true {
       return
     }

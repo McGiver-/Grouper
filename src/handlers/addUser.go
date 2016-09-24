@@ -15,7 +15,7 @@ import (
 type AddUserResponse struct{
 	Success bool    `json:"success"`
 	Exists  bool    `json:"exists"`
-	DBError bool    `json:dberror`
+	DBError bool    `json:"dberror"`
 	UserId 	int     `json:"userid"`
 }
 
@@ -76,7 +76,7 @@ func AddUser(rw http.ResponseWriter, req *http.Request){
 								return
 							}
 						}
-						rw.WriteHeader(http.StatusConflict)
+						rw.WriteHeader(http.StatusOK)
 						if encoded := sendAddUserResponse(&rw, AddUserResponse{true, false, false,foundId}); encoded != true {
 							return
 						}
