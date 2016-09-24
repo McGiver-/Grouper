@@ -9,7 +9,7 @@ import(
   "net/http"
 )
 
-type AddUserResponse struct{
+type LoginResponse struct{
 	Success bool    `json:"success"`
 	DBError bool    `json:dberror`
 	UserId 	int     `json:"userid"`
@@ -27,12 +27,12 @@ func login(rw http.ResponseWriter, req *http.Request){
   hasher.Write([]byte(password))
   hashedPass := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 
-  rows, err := db.Query("SELECT id FROM accounts WHERE username=$1 and password=$2",username,password)
+  rows, err := db.Query("SELECT id FROM accounts WHERE username=$1 and password=$2",username,hashedPass)
 
   if err != nil {
 		fmt.Println("DATABASE ERROR: Failed username search in adduser")
 		rw.WriteHeader(http.StatusConflict)
-		if encoded := jsonResponse(&rw,LoginResponse{false,false,-1}); encoded != true{
+		if encoded := sendLoginResponse(&rw,LoginResponse{false,false,-1}); encoded != true{
 			return
 		}
 	}
@@ -41,18 +41,18 @@ func login(rw http.ResponseWriter, req *http.Request){
     if err := rows.Scan(&foundId); err != nil {
       fmt.Println("DATABASE ERROR: Failed to scan")
       rw.WriteHeader(http.StatusConflict)
-      if encoded := jsonResponse(&rw, LoginResponse{false;false;-1}); encoded != true {
+      if encoded := sendLoginResponse(&rw, LoginResponse{false,false,-1}); encoded != true {
         return
       }
     }
     rw.WriteHeader(http.StatusConflict)
-    if encoded := jsonResponse(&rw, AddUserResponse{true,false;foundId}); encoded != true {
+    if encoded := sendLoginResponse(&rw, LoginResponse{true,false,foundId}); encoded != true {
       return
     }
   }
 }
 
-func jsonResponse(rw *http.ResponseWriter , response AddUserResponse) (bool){
+func sendLoginResponse(rw *http.ResponseWriter , response LoginResponse) (bool){
 
 	(*rw).Header().Set("Content-Type","application/json; charset=UTF-8")
 
