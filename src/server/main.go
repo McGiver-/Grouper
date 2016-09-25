@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/McGiver-/Grouper/src/handlers"
 	"github.com/McGiver-/Grouper/src/myDB"
-	"net/http"
 	"log"
+	"net/http"
 )
+
 type Category struct {
 	Name   string `json:"name"`
 	NbUsrs string `json:"nbusrs"`
@@ -16,9 +17,10 @@ type Category struct {
 func main() {
 	fmt.Println("Application started")
 	myDB.Init("postgres", "postgresql://george@localhost:26257/grouper?sslmode=disable")
-	http.HandleFunc("/login",handlers.Login)
-	http.HandleFunc("/addUser",handlers.AddUser)
-	http.HandleFunc("/listUsers",handlers.ListUsers)
+	http.HandleFunc("/login", handlers.Login)
+	http.HandleFunc("/addUser", handlers.AddUser)
+	http.HandleFunc("/listUsers", handlers.ListUsers)
+	http.HandleFunc("/getStats", handlers.GetStats)
 	log.Fatal(http.ListenAndServe(":9000", nil))
 }
 
