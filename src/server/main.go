@@ -21,6 +21,7 @@ func main() {
 	http.HandleFunc("/addUser", handlers.AddUser)
 	http.HandleFunc("/listUsers", handlers.ListUsers)
 	http.HandleFunc("/getStats", handlers.GetStats)
+	http.HandleFunc("/createCategory", handlers.CreateCategory)
 	log.Fatal(http.ListenAndServe(":9000", nil))
 }
 
